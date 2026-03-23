@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Farm Fetched</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  https://sdk.minepi.com/pi-sdk.js</script>
+
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .btn { padding: 10px; background: purple; color: white; border-radius: 8px; }
+    .animal { padding: 10px; border: 1px solid #ccc; margin-top: 10px; }
+  </style>
+</head>
+
+<body>
+
+  <h1>Farm Fetched</h1>
+  <p>Buy, Feed, Raise, Sell — using Pi</p>
+
+  <!-- Login Button -->
+  <button class="btn" id="loginBtn">Login with Pi</button>
+
+  <div id="game" style="display:none;">
+    <h2>Your Farm</h2>
+    <p id="userInfo"></p>
+
+    <button class="btn" onclick="buyAnimal()">Buy Chicken (0.1 Pi)</button>
+
+    <div id="animals"></div>
+  </div>
+
+  <script>
+    // Initialize Pi SDK
+    Pi.init({ version: "2.0", sandbox: true });
+
+    let userAnimals = [];
+
+    // ----- LOGIN -----
+    document.getElementById("loginBtn").onclick = async () => {
+      const scopes = ['username'];
+
+      Pi.authenticate(scopes, onIncompletePayment)
+        .then(function(auth) {
+          document.getElementById("loginBtn").style.display = "none";
+          document.getElementById("game").style.display = "block";
+          document.getElementById("userInfo").innerHTML =
+            "Logged in as: " + auth.user.username;
+        });
+    };
+
+    // ----- BUY ANIMAL -----
+    async function buyAnimal() {
+      try {
+        const payment = await Pi.createPayment({
+          amount: 0.1,
+          memo: "Buying chicken",
+          metadata: { type: "animal", animal: "chicken" }
+        });
+
+        userAnimals.push("Chicken");
+        updateAnimalList();
+
+      } catch (err) {
+        alert("Payment cancelled or failed.");
+      }
+    }
+
+    function updateAnimalList() {
+      const list = document.getElementById("animals");
+      list.innerHTML = "";
+
+      userAnimals.forEach(a => {
+        list.innerHTML += `<div class="animal">${a}</div>`;
+      });
+    }
+
+    function onIncompletePayment(payment) {
+      console.log("Payment incomplete:", payment);
+    }
+  </script>
+</body>
+</html>
