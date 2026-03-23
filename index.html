@@ -3,6 +3,8 @@
 <head>
   <title>Farm Fetched</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- CORRECT PI SDK -->
   https://sdk.minepi.com/pi-sdk.js</script>
 
   <style>
@@ -45,6 +47,10 @@
           document.getElementById("game").style.display = "block";
           document.getElementById("userInfo").innerHTML =
             "Logged in as: " + auth.user.username;
+        })
+        .catch(err => {
+          alert("Login failed.");
+          console.error(err);
         });
     };
 
